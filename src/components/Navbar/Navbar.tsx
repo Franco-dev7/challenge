@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Product } from '../../assets/Product';
 
 const Navbar: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
   const URL = import.meta.env.VITE_API_PRODUCTS; // URL de la API para crear productos
 
   const [newProductData, setNewProductData] = useState<Product>({
@@ -15,12 +15,8 @@ const Navbar: React.FC = () => {
     rating: { rate: 0, count: 0 }
   });
 
-  const handleCreateProduct = () => {
-    setShowModal(prevState => !prevState); // Alternar entre true y false para abrir y cerrar el modal
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
       const response = await fetch(URL, {
         method: 'POST',
@@ -29,16 +25,12 @@ const Navbar: React.FC = () => {
         },
         body: JSON.stringify(newProductData)
       });
-
       if (!response.ok) {
         throw new Error('Error al crear el producto');
       }
-
-      console.log('Producto creado exitosamente');
-      setShowModal(false); // Cierra el modal después de crear el producto exitosamente
+      alert('Producto creado exitosamente');
     } catch (error) {
       console.error('Error al crear el producto:', error.message);
-      // Manejar el error, por ejemplo, mostrar un mensaje de error al usuario
     }
   };
 
@@ -57,42 +49,43 @@ const Navbar: React.FC = () => {
           <img src="/vite.svg" alt="Logo" width="30" height="24" className="d-inline-block align-text-top"/>
           CarritoVITE
         </a>
-        <button className="btn btn-primary" onClick={handleCreateProduct}>Crear Producto</button>
-      </div>
-
-      {/* Modal para crear productos */}
-      {showModal && (
-        <div className="modal" tabIndex={-1} role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Crear Producto</h5>
-                <button type="button" className="close" onClick={() => setShowModal(false)}>
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                {/* Formulario para crear productos */}
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="productName" className="form-label">Nombre del Producto</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="productName"
-                      name="title"
-                      value={newProductData.title}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  {/* Agrega más campos según sea necesario */}
-                  <button type="submit" className="btn btn-primary">Crear</button>
-                </form>
-              </div>
+        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Crear Producto</button>
+      </div> 
+      <div className="modal fade" id="staticBackdrop" tabIndex={-1} aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="staticBackdropLabel">Crear Producto</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="title" className="form-label">Título</label>
+                  <input type="text" className="form-control" id="title" name="title" value={newProductData.title} onChange={handleChange} />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="description" className="form-label">Descripción</label>
+                  <textarea className="form-control" id="description" name="description" value={newProductData.description} onChange={handleChange}></textarea>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="description" className="form-label">Price</label>
+                  <textarea className="form-control" id="price" name="price" value={newProductData.price} onChange={handleChange}></textarea>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="description" className="form-label">Image</label>
+                  <textarea className="form-control" id="image" name="image" value={newProductData.image} onChange={handleChange}></textarea>
+                </div><div className="mb-3">
+                  <label htmlFor="description" className="form-label">Category</label>
+                  <textarea className="form-control" id="category" name="category" value={newProductData.category} onChange={handleChange}></textarea>
+                </div>
+                
+                <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+              </form>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 };
