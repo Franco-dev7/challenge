@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Product } from '../../assets/Product';
 
 interface CardProductProps {
-  products: Product[]; // Definición de las props que espera recibir el componente
+  products: Product[];
 }
 
 const CardProduct: React.FC<CardProductProps> = ({ products }) => {
   const cardStyle: React.CSSProperties = {
     width: '18rem'
   };
+   
+  const URL = import.meta.env.VITE_API_PRODUCTS;
 
   const truncateDescription = (description: string, maxLength: number) => {
     if (description.length > maxLength) {
@@ -26,6 +28,23 @@ const CardProduct: React.FC<CardProductProps> = ({ products }) => {
     }));
   };
 
+  const handleDeleteProduct = async (productId: number) => {
+    const confirmed = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
+    if (confirmed) {
+      try {
+        const response = await fetch(`${URL}/${productId}`, {
+          method: 'DELETE'
+        });
+        if (!response.ok) {
+          throw new Error('Error al eliminar el producto');
+        }
+        console.log('Producto eliminado correctamente');
+      } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+      }
+    }
+  };
+  
   return (
     <div className='container'>
       <div className='row'>
@@ -48,8 +67,8 @@ const CardProduct: React.FC<CardProductProps> = ({ products }) => {
                   )}
                 </p>
                 <div className="mt-auto">
-                  <button className="btn btn-secondary me-2">Editar</button>
-                  <button className="btn btn-danger">Eliminar</button>
+                  <button className="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#editProduct">Editar</button>
+                  <button className="btn btn-danger" onClick={() => handleDeleteProduct(product.id)}>Eliminar</button>
                 </div>
               </div>
             </div>
