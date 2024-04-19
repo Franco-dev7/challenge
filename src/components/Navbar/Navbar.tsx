@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Product } from '../../assets/Product';
 
 const Navbar: React.FC = () => {
-  // const [showModal, setShowModal] = useState(false);
-  const URL = import.meta.env.VITE_API_PRODUCTS; // URL de la API para crear productos
-
+  const URL = import.meta.env.VITE_API_PRODUCTS; 
+  
   const [newProductData, setNewProductData] = useState<Product>({
-    id: 0, // Asigna un ID inicial válido para el nuevo producto
+    id: 0,
     title: '',
     description: '',
     price: 0,
