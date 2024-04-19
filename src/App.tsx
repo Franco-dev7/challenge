@@ -24,7 +24,7 @@ function App() {
 
   return (
     <>
-      <Navbar />
+      <Navbar/>
       {products.length > 0 ? (
         <CardProduct products={products} />
       ) : (
