@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { Product } from '../../assets/Product';
+import {useGetProductsQuery, useDeleteProductMutation} from '../../api/apiSlice'
 
 interface CardProductProps {
   products: Product[];
 }
 
-const CardProduct: React.FC<CardProductProps> = ({ products }) => {
+const CardProduct: React.FC<CardProductProps> = () => {
+  const [expandedDescriptions, setExpandedDescriptions] = useState<{ [key: number]: boolean }>({});
+
+  const {data: products, isError, isLoading, error } = useGetProductsQuery();
+  const[deleteProduct]= useDeleteProductMutation()
+
+  if(isLoading) return <div>Loading...</div>;
+  else if (isError) return <div>Error: {error.message}</div>
   const cardStyle: React.CSSProperties = {
     width: '18rem'
   };
-   
-  const URL = import.meta.env.VITE_API_PRODUCTS;
-
+  
   const truncateDescription = (description: string, maxLength: number) => {
     if (description.length > maxLength) {
       return description.substring(0, maxLength) + '...';
@@ -19,7 +25,6 @@ const CardProduct: React.FC<CardProductProps> = ({ products }) => {
     return description;
   };
 
-  const [expandedDescriptions, setExpandedDescriptions] = useState<{ [key: number]: boolean }>({});
 
   const toggleDescription = (productId: number) => {
     setExpandedDescriptions((prevState) => ({
@@ -28,22 +33,7 @@ const CardProduct: React.FC<CardProductProps> = ({ products }) => {
     }));
   };
 
-  const handleDeleteProduct = async (productId: number) => {
-    const confirmed = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
-    if (confirmed) {
-      try {
-        const response = await fetch(`${URL}/${productId}`, {
-          method: 'DELETE'
-        });
-        if (!response.ok) {
-          throw new Error('Error al eliminar el producto');
-        }
-        console.log('Producto eliminado correctamente');
-      } catch (error) {
-        console.error('Error al eliminar el producto:', error);
-      }
-    }
-  };
+  
   
   return (
     <div className='container'>
@@ -64,11 +54,11 @@ const CardProduct: React.FC<CardProductProps> = ({ products }) => {
                     >
                       {expandedDescriptions[product.id] ? ' Ver menos' : ' Ver más'}
                     </span>
-                  )}
+                  )} 
                 </p>
                 <div className="mt-auto">
                   <button className="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#editProduct">Editar</button>
-                  <button className="btn btn-danger" onClick={() => handleDeleteProduct(product.id)}>Eliminar</button>
+                  <button className="btn btn-danger" onClick={()=> deleteProduct(product.id)}>Eliminar</button>
                 </div>
               </div>
             </div>

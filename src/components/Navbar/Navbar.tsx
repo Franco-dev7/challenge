@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Product } from '../../assets/Product';
+import {useCreateProductMutation} from "../../api/apiSlice"
 
 const Navbar: React.FC = () => {
-  const URL = import.meta.env.VITE_API_PRODUCTS; 
+  const [createProduct]= useCreateProductMutation()
   
   const [newProductData, setNewProductData] = useState<Product>({
     id: 0,
@@ -16,21 +17,7 @@ const Navbar: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const response = await fetch(URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newProductData)
-      });
-      if (!response.ok) {
-        throw new Error('Error al crear el producto');
-      }
-      alert('Producto creado exitosamente');
-    } catch (error) {
-      console.error('Error al crear el producto:', error.message);
-    }
+    createProduct(newProductData)
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
