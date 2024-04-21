@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Product } from '../../Product';
+import{v4 as uuidv4}from 'uuid';
 import {useCreateProductMutation} from "../../services/api/apiSlice"
 
 const Navbar: React.FC = () => {
   const [createProduct]= useCreateProductMutation()
-  
+  const newId = uuidv4()
   const [newProductData, setNewProductData] = useState<Product>({
-    id: 0,
+    id: newId,
     title: '',
     description: '',
     price: 0,
@@ -19,7 +20,17 @@ const Navbar: React.FC = () => {
     e.preventDefault();
     try {
       await createProduct(newProductData);
-      alert('Producto creado correctamente'); // Mostrar alerta si el producto se crea correctamente
+      alert('Producto creado correctamente'); 
+       setNewProductData(prevState => ({ // Limpiamos el formulario después de crear el producto
+        ...prevState,
+        id: newId,
+        title: '',
+        description: '',
+        price: 0,
+        category: '',
+        image: '',
+        rating: { rate: 0, count: 0 }
+      }));
     } catch (error) {
       console.error('Error al crear el producto', error);
     }

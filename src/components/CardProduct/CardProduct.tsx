@@ -3,7 +3,7 @@ import { Product } from '../../Product';
 import { useGetProductsQuery, useDeleteProductMutation, useUpdateProductMutation } from '../../services/api/apiSlice';
 
 const CardProduct = () => {
-  const [expandedDescriptions, setExpandedDescriptions] = useState<{ [key: number]: boolean }>({});
+  const [expandedDescriptions, setExpandedDescriptions] = useState<{ [key: number|string]: boolean }>({});
   const [editedProduct, setEditedProduct] = useState<Product | null>(null);
   const { data: products, isError, isLoading, error } = useGetProductsQuery('');
   const [updateProduct] = useUpdateProductMutation();
@@ -28,7 +28,7 @@ const CardProduct = () => {
     return description;
   };
 
-  const toggleDescription = (productId: number) => {
+  const toggleDescription = (productId: number|string) => {
     setExpandedDescriptions((prevState) => ({
       ...prevState,
       [productId]: !prevState[productId]
