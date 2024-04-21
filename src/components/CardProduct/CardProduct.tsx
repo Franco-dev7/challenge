@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { Product } from '../../Product';
-import {useGetProductsQuery, useDeleteProductMutation, useUpdateProductMutation} from '../../services/api/apiSlice'
-
+import { useGetProductsQuery, useDeleteProductMutation, useUpdateProductMutation } from '../../services/api/apiSlice';
 
 const CardProduct = () => {
   const [expandedDescriptions, setExpandedDescriptions] = useState<{ [key: number]: boolean }>({});
   const [editedProduct, setEditedProduct] = useState<Product | null>(null);
-  const {data: products, isError, isLoading, error } = useGetProductsQuery('');
-  const [updateProduct]= useUpdateProductMutation()
-  const[deleteProduct]= useDeleteProductMutation()
+  const { data: products, isError, isLoading, error } = useGetProductsQuery('');
+  const [updateProduct] = useUpdateProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
 
-  if(isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
   else if (isError) {
     if (error instanceof Error) {
       return <div>Error: {error.message}</div>;
@@ -21,7 +20,7 @@ const CardProduct = () => {
   const cardStyle: React.CSSProperties = {
     width: '18rem'
   };
-  
+
   const truncateDescription = (description: string, maxLength: number) => {
     if (description.length > maxLength) {
       return description.substring(0, maxLength) + '...';
@@ -34,6 +33,18 @@ const CardProduct = () => {
       ...prevState,
       [productId]: !prevState[productId]
     }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      if (editedProduct) {
+        await updateProduct(editedProduct);
+        alert('Producto actualizado correctamente');
+      }
+    } catch (error) {
+      console.error('Error al actualizar el producto', error);
+    }
   };
 
   return (
@@ -55,40 +66,37 @@ const CardProduct = () => {
                     >
                       {expandedDescriptions[product.id] ? ' Ver menos' : ' Ver más'}
                     </span>
-                  )} 
+                  )}
                 </p>
                 <div className="mt-auto">
-                <button className="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#editProduct" onClick={() => setEditedProduct(product)}>Editar</button>
-                  <button className="btn btn-danger" onClick={() => {deleteProduct(product.id); alert('producto eliminado')}}>Eliminar</button>
+                  <button className="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#editProduct" onClick={() => setEditedProduct(product)}>Editar</button>
+                  <button className="btn btn-danger" onClick={() => { deleteProduct(product.id); alert('Producto eliminado') }}>Eliminar</button>
                 </div>
                 <div className="modal fade" id="editProduct" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">Editar Producto</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div className="modal-body">
-            {editedProduct && (
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  updateProduct(editedProduct);
-                }}>
-                  <div className="mb-3">
-                    <label htmlFor="title" className="form-label">Título</label>
-                    <input type="text" className="form-control" id="title" value={editedProduct.title} onChange={(e) => setEditedProduct({ ...editedProduct!, title: e.target.value })} />
+                  <div className="modal-dialog">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title" id="exampleModalLabel">Editar Producto</h5>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div className="modal-body">
+                        {editedProduct && (
+                          <form onSubmit={handleSubmit}>
+                            <div className="mb-3">
+                              <label htmlFor="title" className="form-label">Título</label>
+                              <input type="text" className="form-control" id="title" value={editedProduct.title} onChange={(e) => setEditedProduct({ ...editedProduct, title: e.target.value })} />
+                            </div>
+                            <div className="mb-3">
+                              <label htmlFor="description" className="form-label">Descripción</label>
+                              <textarea className="form-control" id="description" value={editedProduct.description} onChange={(e) => setEditedProduct({ ...editedProduct, description: e.target.value })}></textarea>
+                            </div>
+                            <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">Guardar Cambios</button>
+                          </form>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="mb-3">
-                    <label htmlFor="description" className="form-label">Descripción</label>
-                    <textarea className="form-control" id="description" value={editedProduct.description} onChange={(e) => setEditedProduct({ ...editedProduct!, description: e.target.value })}></textarea>
-                  </div>
-                  <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">Guardar Cambios</button>
-                </form>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+                </div>
               </div>
             </div>
           </div>
@@ -97,4 +105,5 @@ const CardProduct = () => {
     </div>
   );
 };
+
 export default CardProduct;

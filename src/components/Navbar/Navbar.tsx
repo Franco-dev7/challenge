@@ -17,7 +17,12 @@ const Navbar: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createProduct(newProductData)
+    try {
+      await createProduct(newProductData);
+      alert('Producto creado correctamente'); // Mostrar alerta si el producto se crea correctamente
+    } catch (error) {
+      console.error('Error al crear el producto', error);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
