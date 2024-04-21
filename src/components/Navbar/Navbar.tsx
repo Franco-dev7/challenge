@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Product } from '../../assets/Product';
-import {useCreateProductMutation} from "../../api/apiSlice"
+import { Product } from '../../Product';
+import {useCreateProductMutation} from "../../services/api/apiSlice"
 
 const Navbar: React.FC = () => {
   const [createProduct]= useCreateProductMutation()
